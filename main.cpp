@@ -154,8 +154,8 @@ void mouseClicked(int x, int y)
             {
                 if(it->getPosition() == mid)
                 {
+                     selectedTile->shape.setPosition(newX, newY);
                     it = tiles.erase(it);
-                    selectedTile->shape.setPosition(newX, newY);
 
                     break;
                 }
