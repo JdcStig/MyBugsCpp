@@ -1,3 +1,4 @@
+
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
@@ -11,6 +12,7 @@ struct tile
     CircleShape shape;
     bool isSelected = false;
     Color color;
+    int health;
     tile() : color(Color::White) // default color is white
     {
         shape.setRadius(20);
@@ -33,6 +35,7 @@ struct tile
 
 void mouseReleased(int x, int y);
 void createTile(vector<tile*> &tiles);
+void displayBugsCoordinates();
 vector<tile*> tiles;
 tile *selectedTile = nullptr;
 
@@ -111,6 +114,9 @@ bool tileEmpty(int x, int y)
     return true;
 }
 
+
+
+
 void mouseReleased(int x, int y)
 {
     int tileX = (x / 50) * 50;
@@ -124,30 +130,40 @@ void mouseReleased(int x, int y)
             {
                 selectedTile = t;
                 selectedTile->shape.setOutlineColor(Color::Green);
-                break; // Once tile selected i dont need to check for another as i can only select 1 at a time
+                break; // Once tile selected no need to check for another as only one can be selected at any given time
             }
         }
     }
     else
     {
         Vector2f pos = selectedTile->getPosition();
-        if (abs(tileX - pos.x) == 50 && abs(tileY - pos.y) == 50 && tileEmpty(tileX, tileY))
+
+        // checks if the distance between the current and target tile is within the correct range e.g 1 tile range or 50px
+        int checkForX = tileX - pos.x;
+        int checkForY = tileY - pos.y;
+
+        // Check if the movement is within one tile distance and the target tile is empty
+        if (((abs(checkForX) == 50 && checkForY == 0) || (abs(checkForY) == 50 && checkForX == 0) ||   // horizontal or vertical movement
+             (abs(checkForX) == 50 && abs(checkForY) == 50)) &&                                       // diagonal movement
+            tileEmpty(tileX, tileY))
         {
             selectedTile->shape.setPosition(tileX + 5, tileY + 5);
         }
 
-        // Make it so nothing is now selected  after a movement
-        selectedTile->shape.setOutlineColor(Color::White);
+        // Clears the selected option after movement
+        selectedTile->shape.setOutlineColor(Color::White);  //resets back to white
         selectedTile = nullptr;
     }
 }
+
+
 
 void createTile(vector<tile*> &tiles)
 {
     ifstream inputFile("bugs.txt");
     if (!inputFile)
     {
-        cout << "Can not open file bugs.txt";
+        cout << "Unable to open file bugs.txt";
         return;
     }
 
@@ -158,8 +174,11 @@ void createTile(vector<tile*> &tiles)
         stringstream ss(line);
         int x, y;
         int color;
-        ss >> x >> y >> color;
+        int health;
+        ss >> x >> y >> color >> health;
         t->shape.setPosition((x * 50) + 5, (y * 50) + 5);
+
+
         switch (color)
         {
             case 0:
@@ -173,18 +192,37 @@ void createTile(vector<tile*> &tiles)
                 break;
         }
         t->shape.setOutlineThickness(5);
+        t->health = health;
         tiles.push_back(t);
     }
     inputFile.close();
 }
 
+
+
+
+
 void displayMenu()
 {
     cout << "Menu:\n";
     cout << "1. Start Game\n";
-    cout << "2. Exit\n";
-    cout << "Enter your choice:\n";
+    cout << "2. Display Bugs Coordinates\n";
+    cout << "3. Exit\n";
+    cout << "Enter your choice: ";
 }
+
+void displayBugsCoordinates()
+{
+    cout << "Bugs Coordinates:\n";
+    for (tile* t : tiles)
+    {
+        Vector2f pos = t->getPosition();
+        int tileX = pos.x / 50;  //need to divide by 50 as each tile is 50x50
+        int tileY = pos.y / 50;
+        cout << "Bug on tile (" << tileX << ", " << tileY << ") - Health: " << t->health << "\n";
+    }
+}
+
 
 int main()
 {
@@ -197,11 +235,20 @@ int main()
         switch (choice)
         {
             case 1:
+
                 runGame();
                 break;
+
             case 2:
-                cout << "Exiting...\n";
+
+                displayBugsCoordinates();
                 break;
+
+                case 3:
+                cout << "Exiting...\n";
+
+                break;
+
             default:
                 cout << "Invalid choice. Please try again.\n";
                 break;
