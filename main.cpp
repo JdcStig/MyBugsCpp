@@ -31,7 +31,7 @@ struct tile
         int shapeY = ((int)shape.getPosition().y / 50) * 50;
         return Vector2f(shapeX, shapeY);
     }
-};
+} ;
 
 void mouseReleased(int x, int y);
 void createTile(vector<tile*> &tiles);
