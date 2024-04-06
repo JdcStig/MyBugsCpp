@@ -12,7 +12,7 @@ struct tile
     bool isSelected = false;
     Color color;
     int health;
-    int id; // New field for the bugs id
+    int id;
     tile() : color(Color::White) // default color is white
     {
         shape.setRadius(20);
@@ -68,17 +68,17 @@ void runGame()
 
 
     RectangleShape downButton(Vector2f(500, 50));
-    downButton.setFillColor(Color(192, 192, 192)); //  color silver
+    downButton.setFillColor(Color(192, 192, 192));
     downButton.setPosition(50, 550); // Adjust position for the down button
 
 
     RectangleShape rightButton(Vector2f(50, 500));
-    rightButton.setFillColor(Color(192, 192, 192)); //  color silver
+    rightButton.setFillColor(Color(192, 192, 192));
     rightButton.setPosition(550, 50); // Adjust position for the right button
 
 
     RectangleShape leftButton(Vector2f(50, 500));
-    leftButton.setFillColor(Color(192, 192, 192)); //  color silver
+    leftButton.setFillColor(Color(192, 192, 192));
     leftButton.setPosition(0, 50); // Adjust possition for the left button
 
 
@@ -125,11 +125,9 @@ void runGame()
             }
 
 
-
-
             if (event.type == Event::MouseButtonPressed)
             {
-                // Check if the click event is within the bounds of the down button and not outside it
+
                 if (event.mouseButton.x >= downButton.getPosition().x && event.mouseButton.x <= downButton.getPosition().x + downButton.getSize().x &&
                     event.mouseButton.y >= downButton.getPosition().y && event.mouseButton.y <= downButton.getPosition().y + downButton.getSize().y)
                 {
@@ -145,7 +143,7 @@ void runGame()
 
             if (event.type == Event::MouseButtonPressed)
             {
-                // Check if the click event is within the bounds of the right button and not outside it
+
                 if (event.mouseButton.x >= rightButton.getPosition().x && event.mouseButton.x <= rightButton.getPosition().x + rightButton.getSize().x &&
                     event.mouseButton.y >= rightButton.getPosition().y && event.mouseButton.y <= rightButton.getPosition().y + rightButton.getSize().y)
                 {
@@ -160,7 +158,7 @@ void runGame()
 
             if (event.type == Event::MouseButtonPressed)
             {
-                // Check if the click event is within the bounds of the right button and not outside it
+
                 if (event.mouseButton.x >= leftButton.getPosition().x && event.mouseButton.x <= leftButton.getPosition().x + leftButton.getSize().x &&
                     event.mouseButton.y >= leftButton.getPosition().y && event.mouseButton.y <= leftButton.getPosition().y + leftButton.getSize().y)
                 {
@@ -177,7 +175,7 @@ void runGame()
         dir *= -1;
         window.clear();
 
-        // Draw background tiles
+        // Draw background board
         for (RectangleShape &s : bg)
         {
             window.draw(s);
@@ -208,7 +206,7 @@ void runGame()
 // Move all bugs down by 1 tile (aka 50 pixels) if within bounds
         for (tile* t : tiles)
         {
-            if (t->shape.getPosition().y + 50 < window.getSize().y) // Check down up is within the board
+            if (t->shape.getPosition().y + 50 < window.getSize().y)
             {
                 t->shape.move(0, 50);
             }
@@ -217,7 +215,7 @@ void runGame()
 // Move all bugs right by 1 tile (aka 50 pixels) if within bounds
         for (tile* t : tiles)
         {
-            if (t->shape.getPosition().x + 50 < window.getSize().x) // Check moving right is within the board
+            if (t->shape.getPosition().x + 50 < window.getSize().x)
             {
                 t->shape.move(50, 0);
             }
@@ -226,7 +224,7 @@ void runGame()
 // Move all bugs left by 1 tile (aka 50 pixels) if within bounds
         for (tile* t : tiles)
         {
-            if (t->shape.getPosition().x - 50 >= 0) // Check moving left is within the board
+            if (t->shape.getPosition().x - 50 >= 0)
             {
                 t->shape.move(-50, 0);
             }
@@ -332,7 +330,7 @@ void createTile(vector<tile*> &tiles)
         }
         t->shape.setOutlineThickness(5);
         t->health = health;
-        t->id = id; // Assign the ID value to the id attribute in the tile struct
+        t->id = id;
         tiles.push_back(t);
     }
     inputFile.close();
@@ -373,7 +371,7 @@ void findBugByID()
         {
             found = true;
             Vector2f pos = t->getPosition();
-            int tileX = pos.x / 50;  //need to divide by 50 as each tile is 50x50
+            int tileX = pos.x / 50;
             int tileY = pos.y / 50;
             cout << "Bug ID: " << t->id << ", Coordinates: (" << tileX << ", " << tileY << "), Health: " << t->health << endl;
             break;
