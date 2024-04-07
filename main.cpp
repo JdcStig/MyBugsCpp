@@ -6,14 +6,18 @@
 using namespace std;
 using namespace sf;
 
-struct tile
+enum Direction { NORTH, SOUTH , EAST , WEST };
+
+struct bug
 {
     CircleShape shape;
     bool isSelected = false;
-    Color color;
-    int health;
-    int id;
-    tile() : color(Color::White) // default color is white
+    char Type='N';
+    Direction direction;
+    int Size=0;
+    int id=0;
+
+    bug()
     {
         shape.setRadius(20);
     }
@@ -34,14 +38,15 @@ struct tile
 } ;
 
 void mouseReleased(int x, int y);
-void createTile(vector<tile*> &tiles);
+void createBug(vector<bug*> &bugs);
 void displayBugsCoordinates();
 
-vector<tile*> tiles;
-tile *selectedTile = nullptr;
+vector<bug*> bugs;
+bug *selectedBug = nullptr;
 
 void runGame()
-{                                                   //width and height in pixels , 1 tile is 50px
+
+{ // width and height in pixels , 1 bug is 50px
     sf::RenderWindow window(sf::VideoMode(600, 600), "SFML works!");
 
     vector<sf::RectangleShape> bg;
@@ -57,11 +62,11 @@ void runGame()
         }
     }
 
-    createTile(tiles);
+    createBug(bugs);
 
     int dir = 0;
 
-    // Create buttons               //length    height
+    // Create buttons                    length    height
     RectangleShape upbutton(Vector2f(500, 50)); //Adjust button shape
     upbutton.setFillColor(Color(192, 192, 192)); //  color silver
     upbutton.setPosition(50, 0); // Adjusting the position of up the button
@@ -104,7 +109,7 @@ void runGame()
             }
             else if (event.type == sf::Event::MouseMoved)
             {
-                if (selectedTile != nullptr)
+                if (selectedBug != nullptr)
                 {
                 }
             }
@@ -116,8 +121,8 @@ void runGame()
                 if (event.mouseButton.x >= upbutton.getPosition().x && event.mouseButton.x <= upbutton.getPosition().x + upbutton.getSize().x &&
                     event.mouseButton.y >= upbutton.getPosition().y && event.mouseButton.y <= upbutton.getPosition().y + upbutton.getSize().y)
                 {
-                    // Move all bugs up by 1 tile (aka 50 pixels)
-                    for (tile* t : tiles)
+                    // Move all bugs up by 1 bug (aka 50 pixels)
+                    for (bug* t : bugs)
                     {
                         t->shape.move(0, -50);
                     }
@@ -131,8 +136,8 @@ void runGame()
                 if (event.mouseButton.x >= downButton.getPosition().x && event.mouseButton.x <= downButton.getPosition().x + downButton.getSize().x &&
                     event.mouseButton.y >= downButton.getPosition().y && event.mouseButton.y <= downButton.getPosition().y + downButton.getSize().y)
                 {
-                    // Move all bugs down by 1 tile (50 pixels)
-                    for (tile* t : tiles)
+                    // Move all bugs down by 1 bug (50 pixels)
+                    for (bug* t : bugs)
                     {
                         t->shape.move(0, 50);
                     }
@@ -147,8 +152,8 @@ void runGame()
                 if (event.mouseButton.x >= rightButton.getPosition().x && event.mouseButton.x <= rightButton.getPosition().x + rightButton.getSize().x &&
                     event.mouseButton.y >= rightButton.getPosition().y && event.mouseButton.y <= rightButton.getPosition().y + rightButton.getSize().y)
                 {
-                    // Move all bugs right by 1 tile (50 pixels)
-                    for (tile* t : tiles)
+                    // Move all bugs right by 1 bug (50 pixels)
+                    for (bug* t : bugs)
                     {
                         t->shape.move(50, 0);
                     }
@@ -162,8 +167,8 @@ void runGame()
                 if (event.mouseButton.x >= leftButton.getPosition().x && event.mouseButton.x <= leftButton.getPosition().x + leftButton.getSize().x &&
                     event.mouseButton.y >= leftButton.getPosition().y && event.mouseButton.y <= leftButton.getPosition().y + leftButton.getSize().y)
                 {
-                    // Move all bugs right by 1 tile (50 pixels)
-                    for (tile* t : tiles)
+                    // Move all bugs right by 1 bug (50 pixels)
+                    for (bug* t : bugs)
                     {
                         t->shape.move(-50, 0);
                     }
@@ -181,21 +186,17 @@ void runGame()
             window.draw(s);
         }
 
-        // Draw tiles
-        for (tile* t : tiles)
+        // Draw bug
+        for (bug* t : bugs)
         {
             window.draw(t->shape);
         }
 
 
-
-
-
-
 //checks to make sure that the bugs wont be going off the board if moved in a certain direction
 
 
-        for (tile* t : tiles)
+        for (bug* t : bugs)
         {
             if (t->shape.getPosition().y - 50 >= 0) // Check moving up is within the board    -50 is due to the ap needed to display buttons
             {
@@ -203,8 +204,8 @@ void runGame()
             }
         }
 
-// Move all bugs down by 1 tile (aka 50 pixels) if within bounds
-        for (tile* t : tiles)
+// Move all bugs down by 1 bug (aka 50 pixels) if within bounds
+        for (bug* t : bugs)
         {
             if (t->shape.getPosition().y + 50 < window.getSize().y)
             {
@@ -212,8 +213,8 @@ void runGame()
             }
         }
 
-// Move all bugs right by 1 tile (aka 50 pixels) if within bounds
-        for (tile* t : tiles)
+// Move all bugs right by 1 bug (aka 50 pixels) if within bounds
+        for (bug* t : bugs)
         {
             if (t->shape.getPosition().x + 50 < window.getSize().x)
             {
@@ -221,20 +222,14 @@ void runGame()
             }
         }
 
-// Move all bugs left by 1 tile (aka 50 pixels) if within bounds
-        for (tile* t : tiles)
+// Move all bugs left by 1 bug (aka 50 pixels) if within bounds
+        for (bug* t : bugs)
         {
             if (t->shape.getPosition().x - 50 >= 0)
             {
                 t->shape.move(-50, 0);
             }
         }
-
-
-
-
-
-
 
 
         // Draws all the move buttons
@@ -248,9 +243,9 @@ void runGame()
     }
 }
 
-bool tileEmpty(int x, int y)
+bool SpaceEmpty(int x, int y)
 {
-    for (tile* t : tiles)
+    for (bug* t : bugs)
     {
         if (t->contains(x, y))
         {
@@ -262,79 +257,100 @@ bool tileEmpty(int x, int y)
 
 void mouseReleased(int x, int y)
 {
-    int tileX = (x / 50) * 50;
-    int tileY = (y / 50) * 50;
+    int bugX = (x / 50) * 50;
+    int bugY = (y / 50) * 50;
 
-    if (selectedTile == nullptr)
+    if (selectedBug == nullptr)
     {
-        for (tile* t : tiles)
+        for (bug* t : bugs)
         {
-            if (t->contains(tileX, tileY))
+            if (t->contains(bugX, bugY))
             {
-                selectedTile = t;
-                selectedTile->shape.setOutlineColor(Color::Green);
-                break; // Once tile selected no need to check for another as only one can be selected at any given time
+                selectedBug = t;
+                selectedBug->shape.setOutlineColor(Color::Green);
+                break; // Once bug selected no need to check for another as only one can be selected at any given time
             }
         }
     }
     else
     {
-        Vector2f pos = selectedTile->getPosition();
+        Vector2f pos = selectedBug->getPosition();
 
-        // checks if the distance between the current and target tile is within the correct range e.g 1 tile range
-        int checkForX = tileX - pos.x;
-        int checkForY = tileY - pos.y;
+        // checks if the distance between the current and target bug is within the correct range e.g 1 bug range
+        int checkForX = bugX - pos.x;
+        int checkForY = bugY - pos.y;
 
-        // Check if the movement is within one tile distance and the target tile is empty
+        // Check if the movement is within one bug distance and the target bug is empty
         if (((abs(checkForX) == 50 && checkForY == 0) || (abs(checkForY) == 50 && checkForX == 0) ||   // horizontal or vertical movement
              (abs(checkForX) == 50 && abs(checkForY) == 50)) &&                                     // diagonal movement
-            tileEmpty(tileX, tileY))
+             SpaceEmpty(bugX, bugY))
         {
-            selectedTile->shape.setPosition(tileX + 5, tileY + 5);
+            selectedBug->shape.setPosition(bugX + 5, bugY + 5);
         }
 
         // Clear selection after movement
-        selectedTile->shape.setOutlineColor(Color::White);
-        selectedTile = nullptr;
+        selectedBug->shape.setOutlineColor(Color::White);
+        selectedBug = nullptr;
     }
 }
 
-void createTile(vector<tile*> &tiles)
+void createBug(vector<bug*> &bugs)
 {
     ifstream inputFile("bugs.txt");
     if (!inputFile)
     {
-        cout << "Unable to open file bugs.txt";
+        cout << "Cannot find bugs.txt";
         return;
     }
 
     string line;
     while (getline(inputFile, line))
     {
-        tile* t = new tile();
+        bug* t = new bug();
         stringstream ss(line);
-        int id, x, y, color, health;
-        ss >> id >> x >> y >> color >> health;
-        t->shape.setPosition((x * 50) + 5, (y * 50) + 5);
-        switch (color)
+        char type;
+        int id, x, y, Size;
+        char dir; // temporary store var for direction
+        ss >> type >> id >> x >> y  >> dir >> Size;
+
+        // Convert character direction to enum value
+        switch (dir)
         {
-            case 0:
+            case 'N':
+                t->direction = NORTH;
+                break;
+            case 'S':
+                t->direction = SOUTH;
+                break;
+            case 'E':
+                t->direction = EAST;
+                break;
+            case 'W':
+                t->direction = WEST;
+                break;
+        }
+
+        t->shape.setPosition((x * 50) + 5, (y * 50) + 5);
+        switch (type)
+        {
+            case 'C':
                 t->shape.setFillColor(Color::Red);
                 break;
-            case 1:
+            case 'H':
                 t->shape.setFillColor(Color::Yellow);
                 break;
-            case 2:
+            case 'F':
                 t->shape.setFillColor(Color::Blue);
                 break;
         }
         t->shape.setOutlineThickness(5);
-        t->health = health;
+        t->Size = Size;
         t->id = id;
-        tiles.push_back(t);
+        bugs.push_back(t);
     }
     inputFile.close();
 }
+
 
 void displayMenu()
 {
@@ -349,12 +365,31 @@ void displayMenu()
 void displayBugsCoordinates()
 {
     cout << "Bugs Coordinates:\n";
-    for (tile* t : tiles)
+    for (bug* t : bugs)
     {
         Vector2f pos = t->getPosition();
-        int tileX = pos.x / 50;  //need to divide by 50 as each tile is 50x50
-        int tileY = pos.y / 50;
-        cout << "Bug ID: " << t->id << " - Tile (" << tileX << ", " << tileY << ") - Health: " << t->health << "\n";
+        int bugX = pos.x / 50;  //need to divide by 50 as each bug is 50x50
+        int bugY = pos.y / 50;
+        cout << "Bug Type: " << t->Type << " Bug ID: " << t->id << " - CoOrdinates (" << bugX << ", " << bugY << ")";
+
+        if (t->direction == NORTH) {
+            cout << " Facing North";
+        }
+
+        else if (t->direction == SOUTH) {
+            cout << " Facing South";
+        }
+
+        else if (t->direction == EAST) {
+            cout << " Facing East";
+        }
+
+        else if (t->direction == WEST) {
+            cout << " Facing West";
+        }
+
+        cout << " - Size: " << t->Size << "\n";
+
     }
 }
 
@@ -365,15 +400,15 @@ void findBugByID()
     cin >> id;
 
     bool found = false;
-    for (tile* t : tiles)
+    for (bug* t : bugs)
     {
         if (t->id == id)
         {
             found = true;
             Vector2f pos = t->getPosition();
-            int tileX = pos.x / 50;
-            int tileY = pos.y / 50;
-            cout << "Bug ID: " << t->id << ", Coordinates: (" << tileX << ", " << tileY << "), Health: " << t->health << endl;
+            int bugX = pos.x / 50;
+            int bugY = pos.y / 50;
+            cout << "Bug ID: " << t->id << ", Coordinates: (" << bugX << ", " << bugY << "), Size: " << t->Size << endl;
             break;
         }
     }
