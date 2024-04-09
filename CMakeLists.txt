@@ -3,7 +3,9 @@ project(sfml_002)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(sfml_002 main.cpp)
+add_executable(sfml_002 main.cpp
+        Bug.cpp
+        Bug.h)
 
 set(SFML_STATIC_LIBRARIES TRUE)
 set(SFML_DIR C:/SFML-2.6.1/lib/cmake/SFML)
