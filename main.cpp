@@ -1,4 +1,6 @@
 #include <iostream>
+
+#include <iostream>
 #include <vector>
 #include "Bug.h"
 
@@ -42,9 +44,61 @@ int main() {
                 break;
             }
 
-            case 3:
-               cout<<"not done"<<endl;
+
+
+            case 3: {
+                int SearchedBug;
+
+                cout << "Enter Bug ID to search: ";
+                cin >> SearchedBug;
+                Bug* foundBug = findBugById(bugs, SearchedBug);
+
+                if (foundBug != nullptr) { // if it exists/is found it will do this
+
+                    cout << "\n --Type: " << foundBug->getType() << endl;
+                    cout << " --ID: " << foundBug->getId() << endl;
+                    cout <<" --Position: (" << foundBug->getCurrent_Position().first << " , " << foundBug->getCurrent_Position().second << ")\n";
+                    std::cout << " --Direction: ";
+                    switch (foundBug->getDirection()) {
+                        case
+
+                            Direction::North:
+                            std::cout << "North\n";
+
+                            break;
+
+                        case Direction::East:
+                            std::cout << "East\n";
+
+                            break;
+
+                        case Direction::South:
+                            std::cout << "South\n";
+
+                            break;
+
+                        case Direction::West:
+                            std::cout << "West\n";
+
+                            break;
+                    }
+
+
+                    cout << " --Size: " << foundBug->getSize() << endl;
+                    cout << " --Hop Length: " << foundBug->gethopLength() <<"\n"<< endl;
+
+
+                }
+                else // if the searched for bug does not exist it will aka it receives the null pointer it will print this
+                {
+                    cout << "\n Bug " << SearchedBug << " not found.\n\n";
+                }
+
                 break;
+            }
+
+
+
 
             case 4:
                 cout<<"not done"<<endl;

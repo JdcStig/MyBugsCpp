@@ -19,8 +19,11 @@ public:
     Direction direction;
     int size;
     int hopLength;
+    bool alive= true;
 
-    Bug(char type , int id, int x, int y, Direction direction, int size, int hopLength);
+    Bug(char type , int id, int x, int y, Direction direction, int size, int hopLength, bool alive);
+
+
 
     char getType() const;
     int getId() const;
@@ -28,12 +31,15 @@ public:
     Direction getDirection() const;
     int getSize() const;
     int gethopLength() const;
+    bool getDorA() const;
 
 };
 
 void createBugs(std::vector<Bug*> &bugs);
 
 void displayAllBugs(const std::vector<Bug*>& bugs);
+
+Bug* findBugById(const std::vector<Bug*>& bugs, int id);
 
 
 #endif // BUG_H
